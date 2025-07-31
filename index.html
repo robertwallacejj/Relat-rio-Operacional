@@ -3,94 +3,155 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Relatório Operacional - Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <title>Relatório Operacional</title>
   <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <header>
-    <span>Relatório Operacional</span>
-  </header>
-
-  <main class="container">
-    <form id="formRelatorio">
-      <section class="section-form">
-        <h2>Informações Gerais</h2>
-        <div class="form-grid">
-          <label>
-            Data da operação
-            <input type="date" id="dataOperacao" required />
-          </label>
-          <label>
-            Início da operação
-            <input type="time" id="inicioOperacao" required />
-          </label>
-          <label>
-            Total de produção
-            <input type="number" id="totalProducao" min="0" required />
-          </label>
-          <label class="textarea-label">
-            Observação do Raio-x
-            <textarea id="obsRaioX" rows="3" placeholder="Digite aqui..."></textarea>
-          </label>
-        </div>
-      </section>
-
-      <section class="section-form">
-        <h2>Last Mile</h2>
-        <div class="form-grid">
-          <label>
-            Responsável pelo Last Mile
-            <input type="text" id="responsavelLastMile" required />
-          </label>
-          <label>
-            Data
-            <input type="date" id="dataLastMile" required />
-          </label>
-        </div>
-
-        <div id="motoristasContainer">
-          <h3>Motoristas</h3>
-          <!-- Motoristas serão inseridos aqui -->
-        </div>
-        <button type="button" id="btnAddMotorista" class="btn-add">+ Adicionar Motorista</button>
-
-        <label class="textarea-label">
-          Observação Last Mile
-          <textarea id="obsLastMile" rows="3" placeholder="Digite aqui..."></textarea>
-        </label>
-      </section>
-
-      <section class="section-form">
-        <h2>Lado AR</h2>
-        <p>Segue a lista de PMC despaletizados, recebidos ou em seleção:</p>
-        <ul id="pmcsList"></ul>
-        <button type="button" id="btnAddPMC" class="btn-add">+ Adicionar PMC</button>
-
-        <label class="textarea-label">
-          Observação Lado AR
-          <textarea id="obsLadoAR" rows="3" placeholder="Digite aqui..."></textarea>
-        </label>
-      </section>
-
-      <button type="submit" class="btn-gerar">Gerar Dashboard</button>
-    </form>
-
-    <section id="dashboard" class="dashboard" hidden>
-      <header class="dashboard-header">
-        <h2>Resumo do Relatório</h2>
-        <button id="btnVoltar" class="btn-voltar">← Voltar</button>
-      </header>
-
-      <div class="dashboard-content">
-        <!-- Aqui o dashboard será gerado -->
-      </div>
-    </section>
-  </main>
-
-  <!-- Incluindo a biblioteca html2canvas para gerar imagem -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="script.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+
+<header>
+  <div class="logo" aria-label="Logo Shein" style="font-family: 'Inter', sans-serif; font-weight: 900; font-size:2.2rem; letter-spacing: 2px; color: #111; text-shadow: 0 2px 8px #eee;">
+    SHEIN
+  </div>
+</header>
+
+<div style="text-align:center; margin-top: 8px; color: #888; font-size:1.1rem; letter-spacing:0.5px; font-family: 'Inter', sans-serif;">
+  Relatório Operacional - Controle Diário
+</div>
+
+
+<main class="container" role="main">
+
+  <form id="formRelatorio" autocomplete="off" aria-label="Formulário de Relatório Operacional">
+    <section class="section-form" aria-labelledby="info-gerais">
+      <h2 id="info-gerais">📅 Informações Gerais</h2>
+      <div class="form-grid">
+        <label>Líder de Operação
+          <input type="text" id="liderOperacao" name="liderOperacao" required />
+        </label>
+        <label>Responsável Raio-X
+          <input type="text" id="responsavelRaioX" name="responsavelRaioX" required />
+        </label>
+        <label>Data da operação
+          <input type="date" id="dataOperacao" name="dataOperacao" required />
+        </label>
+        <label>Início da operação
+          <input type="time" id="inicioOperacao" name="inicioOperacao" required />
+        </label>
+        <label>Total de produção
+          <input type="number" id="totalProducao" name="totalProducao" min="0" required />
+        </label>
+      </div>
+      <label class="textarea-label">Observação do Raio-X
+        <textarea id="obsRaioX" name="obsRaioX" placeholder="Digite aqui..."></textarea>
+      </label>
+    </section>
+
+    <section class="section-form" aria-labelledby="last-mile">
+      <h2 id="last-mile">🚚 Last Mile</h2>
+      <div class="form-grid">
+        <label>Responsável Last Mile
+          <input type="text" id="responsavelLastMile" name="responsavelLastMile" />
+        </label>
+        <label>Data Last Mile
+          <input type="date" id="dataLastMile" name="dataLastMile" />
+        </label>
+      </div>
+      <div id="motoristasContainer">
+        <h3>👥 Motoristas</h3>
+        <!-- Motoristas serão adicionados aqui -->
+      </div>
+      <button type="button" id="btnAddMotorista" class="btn-add">+ Adicionar Motorista</button>
+      <label class="textarea-label">Observação Last Mile
+        <textarea id="obsLastMile" name="obsLastMile" placeholder="Digite aqui..."></textarea>
+      </label>
+    </section>
+
+    <section class="section-form" aria-labelledby="lado-ar">
+      <h2 id="lado-ar">📦 Lado AR</h2>
+      <label>Responsável Lado AR
+        <input type="text" id="responsavelLadoAR" name="responsavelLadoAR" />
+      </label>
+      <p>Segue a lista de PMC despaletizados, recebidos ou em seleção:</p>
+      <ul id="pmcsList">
+        <!-- PMCs serão adicionados aqui -->
+      </ul>
+      <button type="button" id="btnAddPMC" class="btn-add">+ Adicionar PMC</button>
+      <label class="textarea-label">Observação Lado AR
+        <textarea id="obsLadoAR" name="obsLadoAR" placeholder="Digite aqui..."></textarea>
+      </label>
+    </section>
+
+    <section class="section-form" aria-labelledby="pend-operacionais">
+      <h2 id="pend-operacionais">⚠️ Pendências Operacionais</h2>
+      <label class="textarea-label">
+        <textarea id="pendenciasOperacionais" name="pendenciasOperacionais" placeholder="Descreva as pendências..."></textarea>
+      </label>
+    </section>
+
+    <button type="submit" class="btn-gerar">Gerar Relatório</button>
+  </form>
+
+
+  <div id="dashboard" class="dashboard hidden" aria-label="Dashboard do Relatório Gerado">
+    <div class="dashboard-header">
+      <h2 style="font-size:1.5rem;">Relatório Gerado</h2>
+      <button id="btnVoltar" class="btn-voltar" aria-label="Voltar para edição">Voltar</button>
+    </div>
+    <div class="dashboard-content">
+      <div>
+        <h3>Informações Gerais</h3>
+        <p><strong>Data da Operação:</strong> <span id="dashDataOperacao"></span></p>
+        <p><strong>Início da Operação:</strong> <span id="dashInicioOperacao"></span></p>
+        <p><strong>Total de Produção:</strong> <span id="dashTotalProducao"></span></p>
+        <p><strong>Observação Raio-X:</strong> <span id="dashObsRaioX"></span></p>
+      </div>
+
+      <div>
+        <h3>Last Mile</h3>
+        <p><strong>Responsável Last Mile:</strong> <span id="dashResponsavelLastMile"></span></p>
+        <p><strong>Data Last Mile:</strong> <span id="dashDataLastMile"></span></p>
+        <p><strong>Observação Last Mile:</strong> <span id="dashObsLastMile"></span></p>
+      </div>
+
+      <div>
+        <h3>Motoristas</h3>
+        <ul id="dashMotoristasList" aria-label="Lista de Motoristas"></ul>
+        <canvas id="graficoMotoristas" width="400" height="250" aria-label="Gráfico Motoristas"></canvas>
+      </div>
+
+      <div>
+        <h3>PMCs</h3>
+        <ul id="dashPMCsList" aria-label="Lista de PMCs"></ul>
+        <canvas id="graficoPMCs" width="400" height="250" aria-label="Gráfico PMCs"></canvas>
+      </div>
+
+      <div>
+        <h3>Lado AR</h3>
+        <p><strong>Responsável Lado AR:</strong> <span id="dashResponsavelLadoAR"></span></p>
+        <p><strong>Observação Lado AR:</strong> <span id="dashObsLadoAR"></span></p>
+      </div>
+
+      <div>
+        <h3>Pendências Operacionais</h3>
+        <p id="dashPendenciasOperacionais"></p>
+      </div>
+    </div>
+  </div>
+
+
+</main>
+
+<footer style="text-align:center; color:#bbb; font-size:0.98rem; margin: 32px 0 10px 0; font-family:'Inter',sans-serif;">
+  &copy; 2025 Relatório Operacional | Inspirado em Shein
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
