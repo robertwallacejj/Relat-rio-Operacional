@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Relatório Operacional - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header>
+    <span>Relatório Operacional</span>
+  </header>
+
+  <main class="container">
+    <form id="formRelatorio">
+      <section class="section-form">
+        <h2>Informações Gerais</h2>
+        <div class="form-grid">
+          <label>
+            Data da operação
+            <input type="date" id="dataOperacao" required />
+          </label>
+          <label>
+            Início da operação
+            <input type="time" id="inicioOperacao" required />
+          </label>
+          <label>
+            Total de produção
+            <input type="number" id="totalProducao" min="0" required />
+          </label>
+          <label class="textarea-label">
+            Observação do Raio-x
+            <textarea id="obsRaioX" rows="3" placeholder="Digite aqui..."></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="section-form">
+        <h2>Last Mile</h2>
+        <div class="form-grid">
+          <label>
+            Responsável pelo Last Mile
+            <input type="text" id="responsavelLastMile" required />
+          </label>
+          <label>
+            Data
+            <input type="date" id="dataLastMile" required />
+          </label>
+        </div>
+
+        <div id="motoristasContainer">
+          <h3>Motoristas</h3>
+          <!-- Motoristas serão inseridos aqui -->
+        </div>
+        <button type="button" id="btnAddMotorista" class="btn-add">+ Adicionar Motorista</button>
+
+        <label class="textarea-label">
+          Observação Last Mile
+          <textarea id="obsLastMile" rows="3" placeholder="Digite aqui..."></textarea>
+        </label>
+      </section>
+
+      <section class="section-form">
+        <h2>Lado AR</h2>
+        <p>Segue a lista de PMC despaletizados, recebidos ou em seleção:</p>
+        <ul id="pmcsList"></ul>
+        <button type="button" id="btnAddPMC" class="btn-add">+ Adicionar PMC</button>
+
+        <label class="textarea-label">
+          Observação Lado AR
+          <textarea id="obsLadoAR" rows="3" placeholder="Digite aqui..."></textarea>
+        </label>
+      </section>
+
+      <button type="submit" class="btn-gerar">Gerar Dashboard</button>
+    </form>
+
+    <section id="dashboard" class="dashboard" hidden>
+      <header class="dashboard-header">
+        <h2>Resumo do Relatório</h2>
+        <button id="btnVoltar" class="btn-voltar">← Voltar</button>
+      </header>
+
+      <div class="dashboard-content">
+        <!-- Aqui o dashboard será gerado -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Incluindo a biblioteca html2canvas para gerar imagem -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
