@@ -130,42 +130,83 @@ document.addEventListener("DOMContentLoaded", () => {
     // PMCs
     const pmcs = [...pmcsList.querySelectorAll(".inputPMC")].map(input => input.value.trim()).filter(Boolean);
 
+
+    // Função para formatar números (milhar, decimal, símbolo)
+    function formatNumber(num, opts = {}) {
+      if (typeof num !== 'number' || isNaN(num)) return '';
+      return num.toLocaleString('pt-BR', {
+        minimumFractionDigits: opts.decimal || 0,
+        maximumFractionDigits: opts.decimal || 0
+      }) + (opts.sufixo || '');
+    }
+
+    // Função para capitalizar nomes
+    function capitalize(str) {
+      return (str || '').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
     // Preenche os elementos do dashboard
     const setText = (id, val) => {
       const el = document.getElementById(id);
       if (el) el.textContent = val;
     };
 
-    setText("dashLiderOperacao", liderOperacao);
-    setText("dashResponsavelRaioX", responsavelRaioX);
+    setText("dashLiderOperacao", capitalize(liderOperacao));
+    setText("dashResponsavelRaioX", capitalize(responsavelRaioX));
     setText("dashDataOperacao", dataOperacao);
     setText("dashInicioOperacao", inicioOperacao);
-    setText("dashTotalProducao", totalProducao);
+    setText("dashTotalProducao", formatNumber(totalProducao));
     setText("dashObsRaioX", obsRaioX);
-    setText("dashResponsavelLastMile", responsavelLastMile);
+    setText("dashResponsavelLastMile", capitalize(responsavelLastMile));
     setText("dashDataLastMile", dataLastMile);
     setText("dashObsLastMile", obsLastMile);
-    setText("dashResponsavelLadoAR", responsavelLadoAR);
+    setText("dashResponsavelLadoAR", capitalize(responsavelLadoAR));
     setText("dashObsLadoAR", obsLadoAR);
     setText("dashPendenciasOperacionais", pendenciasOperacionais);
 
-    // PMCs no dashboard
+    // Resumo Motoristas e PMCs
+    setText("dashResumoMotoristas", motoristas.length);
+    setText("dashResumoPMCs", pmcs.length);
+
+    // PMCs no dashboard (ordenação alfabética)
     const dashPMCsList = document.getElementById("dashPMCsList");
     dashPMCsList.innerHTML = "";
-    pmcs.forEach(p => {
+    pmcs.slice().sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach(p => {
       const li = document.createElement("li");
       li.textContent = p;
       dashPMCsList.appendChild(li);
     });
 
-    // Motoristas no dashboard
+    // Motoristas no dashboard (ordenação por nome)
     const dashMotoristasList = document.getElementById("dashMotoristasList");
     dashMotoristasList.innerHTML = "";
-    motoristas.forEach(m => {
+    motoristas.slice().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')).forEach(m => {
       const li = document.createElement("li");
-      li.textContent = `${m.nome} - ${m.transportadora} - Remessas: ${m.totalRemessa}, Boxes: ${m.totalBox}`;
+      li.textContent = `${capitalize(m.nome)} - ${capitalize(m.transportadora)} - Remessas: ${formatNumber(m.totalRemessa)} | Boxes: ${formatNumber(m.totalBox)}`;
       dashMotoristasList.appendChild(li);
     });
+
+    // Status Operacional
+    setText("dashStatusRaioX", obsRaioX ? "OK" : "Pendente");
+    setText("dashStatusLastMile", obsLastMile ? "OK" : "Pendente");
+    setText("dashStatusLadoAR", obsLadoAR ? "OK" : "Pendente");
+
+    // Insights Rápidos
+    const dashInsightsRapidos = document.getElementById("dashInsightsRapidos");
+    dashInsightsRapidos.innerHTML = "";
+    if (totalProducao > 0) {
+      dashInsightsRapidos.innerHTML += `<li>Produção registrada: <b>${formatNumber(totalProducao)}</b></li>`;
+    }
+    if (motoristas.length > 0) {
+      dashInsightsRapidos.innerHTML += `<li>${motoristas.length} motorista(s) cadastrados</li>`;
+    }
+    if (pmcs.length > 0) {
+      dashInsightsRapidos.innerHTML += `<li>${pmcs.length} PMC(s) registrados</li>`;
+    }
+    if (pendenciasOperacionais) {
+      dashInsightsRapidos.innerHTML += `<li><b>Pendências:</b> ${pendenciasOperacionais}</li>`;
+    }
+
 
     dashboard.classList.remove("hidden");
     form.classList.add("hidden");
